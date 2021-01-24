@@ -1,0 +1,41 @@
+#define LED 13
+#include <Wire.h>
+#include <Adafruit_MLX90614.h>
+
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
+
+unsigned long previousMillis;
+int interval = 50;
+char i;
+int data = 0;
+void setup() {
+    Serial.begin(9600);
+    mlx.begin(); 
+    pinMode(LED, OUTPUT);
+}
+
+void loop() {
+    if (Serial.available() > 0) {
+        i = Serial.read();
+        switch (i) {
+            case '0':
+                digitalWrite(LED, LOW);
+                data = 0;
+                break;
+            case '1':
+                digitalWrite(LED, HIGH);
+                data = 1;
+                break;
+        }
+    }
+if (data==1)
+  {
+      if (millis() - previousMillis >= interval) {
+          previousMillis = millis();
+          Serial.print(mlx.readAmbientTempC()); 
+          Serial.print(";");
+          Serial.println(mlx.readObjectTempC());
+      }
+  }
+
+}
